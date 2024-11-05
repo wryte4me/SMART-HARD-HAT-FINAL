@@ -44,19 +44,40 @@ Key features of the Smart Hard Hat include:
 ## Parts and Components Used
 
 The Smart Hard Hat is constructed using various electronic components and materials to ensure functionality, durability, and ease of use. Below is a comprehensive list of the parts and components used in the project:
-
 ### Hardware Components
-- **ESP32 DevKit**: The primary micro-controller for managing data processing and communication.
-- **GPS Module (NEO 6M)**: Provides real-time location tracking of the wearer.
-- **ESP32 CAM**: Captures images of the user for monitoring purposes.
-- **Silicone Wire (24 AWG)**: Used for wear detection connections.
-- **18650 LiPo Battery**: Powers the smart hard hat and its components.
-- **Battery Management System (BMS)**: Ensures safe charging and discharging of the battery.
-- **Buck Converter Module**: Regulates voltage to appropriate levels for the components.
-- **Full Metal Servo (MG996)**: Mechanism for deploying and retracting the camera to capture the user's face.
-- **Hard Hat**: The protective gear housing all electronic components.
-- **3D Printer Filament (PLA)**: Used for 3D printing custom parts and enclosures.
-- **Bolts and Nuts**: For assembling components securely.
+- **ESP32 DevKit**: The primary micro-controller for managing data processing and communication.  
+  ![ESP32 DevKit](/public/images/image-of-esp32-devkit.png)
+
+- **GPS Module (NEO 6M)**: Provides real-time location tracking of the wearer.  
+  ![GPS Module (NEO 6M)](/public/images/image-of-gps-module-neo-6m.png)
+
+- **ESP32 CAM**: Captures images of the user for monitoring purposes.  
+  ![ESP32 CAM](/public/images/image-of-esp32-cam.png)
+
+- **Silicone Wire (24 AWG)**: Used for wear detection connections.  
+  ![Silicone Wire (24 AWG)](/public/images/image-of-silicone-wire-24-awg.png)
+
+- **18650 LiPo Battery**: Powers the smart hard hat and its components.  
+  ![18650 LiPo Battery](/public/images/image-of-18650-lipo-battery.png)
+
+- **Battery Management System (BMS)**: Ensures safe charging and discharging of the battery.  
+  ![Battery Management System (BMS)](/public/images/image-of-bms.png)
+
+- **Buck Converter Module**: Regulates voltage to appropriate levels for the components.  
+  ![Buck Converter Module](/public/images/image-of-buck-converter-module.png)
+
+- **Full Metal Servo (MG996)**: Mechanism for deploying and retracting the camera to capture the user's face.  
+  ![Full Metal Servo (MG996)](/public/images/image-of-full-metal-servo-mg996.png)
+
+- **Hard Hat**: The protective gear housing all electronic components.  
+  ![Hard Hat](/public/images/image-of-hard-hat.png)
+
+- **3D Printer Filament (PLA)**: Used for 3D printing custom parts and enclosures.  
+  ![3D Printer Filament (PLA)](/public/images/image-of-3d-printer-filament-pla.png)
+
+- **Bolts and Nuts**: For assembling components securely.  
+  ![Bolts and Nuts](/public/images/image-of-bolts-and-nuts.png)
+
 
 ### Software Development Tech Stack
 - **Firebase**: Used for database management and real-time data synchronization.
