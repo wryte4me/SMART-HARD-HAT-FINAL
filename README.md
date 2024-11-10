@@ -108,6 +108,9 @@ The circuit design for the Smart Hard Hat incorporates a 2S LiPo battery with a 
 ### Circuit Diagram
 
 ![Circuit Diagram](public/images/circuit-diagram.png)
+![Circuit Diagram](public/images/circuit-diagram2.png)
+
+
 
 This circuit design effectively integrates power management and component connections, ensuring the reliable operation of the Smart Hard Hat.
 
@@ -262,6 +265,29 @@ The Smart Hard Hat is designed with various components and specifications to ens
 - **GPS Module**: 
   - Type: NEO-6M GPS Module
   - Features: High sensitivity, reliable positioning for outdoor environments.
+
+| #  | Item                                 | Unit | Quantity | Unit Price | Total Amount |
+|----|--------------------------------------|------|----------|------------|--------------|
+| 1  | ESP32 cam                            | pc   | 1        | 350        | 350          |
+| 2  | NodeMCU ESP32                        | pc   | 1        | 350        | 350          |
+| 3  | GPS Module Neo 6m                    | pc   | 1        | 250        | 250          |
+| 4  | 18650 Battery                        | pc   | 2        | 150        | 300          |
+| 5  | Battery Management System 1s         | pc   | 1        | 100        | 100          |
+| 6  | Boost Converter Module               | pc   | 1        | 500        | 500          |
+| 9  | Momentary Push Button Switch         | pc   | 2        | 10         | 20           |
+| 10 | Aluminum Servo Horn 25T              | pc   | 2        | 75         | 150          |
+| 11 | MG996 Full Metal Servo               | pc   | 2        | 300        | 600          |
+| 12 | Copper Tube                          | ft   | 3        | 50         | 150          |
+| 13 | PLA+ Filament                        | kg   | 3        | 900        | 2700         |
+| 14 | Website Domain Name                  | yr   | 1        | 3000       | 3000         |
+| 15 | M3 Bolts and Nuts Kit                | pack | 1        | 500        | 500          |
+| 16 | M3 Rivet Nut                         | pack | 1        | 200        | 200          |
+| 17 | M2 Brass Standoff Kit                | pack | 1        | 700        | 700          |
+| 18 | M3 Brass Standoff Kit                | pack | 1        | 1000       | 1000         |
+| 19 | M5 Rivet Nut                         | pack | 1        | 400        | 400          |
+| 20 | Website Hosting Service Subscription | month | 3       | 249        | 747          |
+|    |                                      |      |          | **Total**  | **12017**    |
+
 
 ### Limitations
 - **GPS Module Limitations**: 
