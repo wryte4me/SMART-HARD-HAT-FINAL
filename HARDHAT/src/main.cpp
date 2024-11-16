@@ -90,7 +90,7 @@ bool isWorn(int _threshold) {
         totalReading += singleReading;      // Accumulate readings
 
         // Print each reading
-        Serial.printf("Reading %d: %d\n", i + 1, singleReading);
+        Serial.printf("Reading : %d | ", singleReading);
 
         delay(50); // 50ms interval
     }
