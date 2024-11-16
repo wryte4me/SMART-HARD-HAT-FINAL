@@ -73,39 +73,76 @@ double newLongitude = 123.456789;
 bool wifiConnected = false;
 int capacitiveThreshold = 25;
 const byte touchPin = 27;
+const byte buzzerPin = 18;
+
+bool syncStarted = false;
+bool beeping = false;
 
 TinyGPSPlus gps;
 FirebaseAuth firebaseAuth;
 FirebaseConfig firebaseConfig;
 
 bool isWorn(int _threshold) {
-    int totalReading = 0; // Sum of readings
-    int numReadings = 20; // Number of readings
-    int singleReading = 0; // Store individual reading
-    bool _result = false; // Final result
+    int totalReading = 0; 
+    int numReadings = 20; 
+    int singleReading = 0;
+    bool _result = false;
 
-    // Loop to take readings
+    Serial.print("Readings : ");
     for (int i = 0; i < numReadings; i++) {
-        singleReading = touchRead(touchPin); // Read touch sensor
-        totalReading += singleReading;      // Accumulate readings
-
-        // Print each reading
-        Serial.printf("Reading : %d | ", singleReading);
-
-        delay(50); // 50ms interval
+        singleReading = touchRead(touchPin); 
+        totalReading += singleReading; 
+        Serial.printf("%d | ", singleReading);
+        delay(50);
     }
-
-    // Calculate the average
     int averageReading = totalReading / numReadings;
-
-    // Determine if the touch sensor indicates it's worn
     _result = averageReading < _threshold;
-
-    // Print the result
     Serial.printf("Average Reading: %d, Result: %s\n", averageReading, _result ? "True (Worn)" : "False (Not Worn)");
-
     return _result;
 }
+
+TaskHandle_t beepingTaskHandle = NULL; // Task handle for managing the beeping task
+
+// Task to toggle the pin on Core 0
+void beepingTask(void *parameter) {
+    while (true) {
+        digitalWrite(buzzerPin, HIGH); // Set pin HIGH
+        delay(1000);                   // Wait 1 second
+        digitalWrite(buzzerPin, LOW); // Set pin LOW
+        delay(1000);                   // Wait 1 second
+    }
+}
+
+// Function to start beeping (create the task on Core 0)
+void startBeeping() {
+    if (beepingTaskHandle == NULL) { // Ensure the task isn't already running
+        xTaskCreatePinnedToCore(
+            beepingTask,        // Function to run
+            "BeepingTask",      // Task name
+            1000,               // Stack size (in bytes)
+            NULL,               // Parameters
+            1,                  // Task priority
+            &beepingTaskHandle, // Task handle
+            0                   // Core 0
+        );
+        Serial.println("Beeping started.");
+    } else {
+        Serial.println("Beeping already running.");
+    }
+}
+
+// Function to stop beeping (delete the task on Core 0)
+void endBeeping() {
+    if (beepingTaskHandle != NULL) { // Check if the task is running
+        vTaskDelete(beepingTaskHandle); // Delete the task
+        beepingTaskHandle = NULL;       // Reset the handle
+        digitalWrite(buzzerPin, LOW);  // Ensure the pin is LOW
+        Serial.println("Beeping stopped.");
+    } else {
+        Serial.println("No beeping to stop.");
+    }
+}
+
 
 
 // write the GPS location to Firebase Realtime Database
@@ -254,14 +291,40 @@ void setup() {
     Serial2.begin(9600);
     setupWifi();
     setupFirebase();
+    pinMode(buzzerPin, OUTPUT);
+        // Example usage
+     // Start beeping on Core 0
+    delay(5000);    // Wait 5 seconds
+    endBeeping();   // Stop beeping
 }
 
 void loop() {
     //readGps();
     checkWifi();
-    delay (1000);
+    //delay (1000);
 
-    Serial.println(isWorn(capacitiveThreshold));
+    if (!syncStarted){
+        if (isWorn(capacitiveThreshold)){
+            Serial.println ("Hard hat is worn. Initiate sync now.");
+            syncStarted = true;
+        }
+    } else {
+        if (!beeping){
+            startBeeping();
+            
+        } else {
+            // deployCamera //cameraDeployed
+            // updateCameraPositionToFirebase (); //cameraPositionUpdated
+            // waitForImageUpload(); //imageUploaded 
+            // readGps(); //locationObtained
+            // updateLocationToFirebase(); //locationSynced
+            //
+        }
+        
+
+    }
+    Serial.println ("#");
+
 
 
     //wait if worn
