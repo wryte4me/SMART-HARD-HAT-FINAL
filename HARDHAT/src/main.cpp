@@ -61,19 +61,22 @@ const char* wifiPassword = "smartbro";
 #define latitudeAddress 0
 #define longitudeAddress 20
 
-double eepromLatitude = 0.0;
+// Location saved in EEPROM
+double eepromLatitude = 0.0;    
 double eepromLongitude = 0.0;
 
-double currentLatitude = 12.345678;
-double currentLongitude = 123.456789;
+// Location saved to store current location
+double currentLatitude = 0.0;
+double currentLongitude = 0.0;
 
-double newLatitude = 12.345678;
-double newLongitude = 123.456789;
+// Location saved to store new location from GPS module
+double newLatitude = 0.0;
+double newLongitude = 0.0;
 
 bool wifiConnected = false;
 int capacitiveThreshold = 25;
 const byte touchPin = 27;
-const byte buzzerPin = 18;
+const byte buzzerPin = 19;
 
 bool syncStarted = false;
 bool beeping = false;
@@ -103,31 +106,17 @@ bool isWorn(int _threshold) {
 
 TaskHandle_t beepingTaskHandle = NULL; // Task handle for managing the beeping task
 
-// Task to toggle the pin on Core 0
+// Task to toggle the buzzer pin on Core 0
 void beepingTask(void *parameter) {
-    while (true) {
-        digitalWrite(buzzerPin, HIGH); // Set pin HIGH
-        delay(1000);                   // Wait 1 second
-        digitalWrite(buzzerPin, LOW); // Set pin LOW
-        delay(1000);                   // Wait 1 second
-    }
+    bool state = false;
+    while (true) { state = !state; digitalWrite(buzzerPin, state ? HIGH : LOW); delay(state ? 500 : 2000);}
 }
 
 // Function to start beeping (create the task on Core 0)
 void startBeeping() {
     if (beepingTaskHandle == NULL) { // Ensure the task isn't already running
-        xTaskCreatePinnedToCore(
-            beepingTask,        // Function to run
-            "BeepingTask",      // Task name
-            1000,               // Stack size (in bytes)
-            NULL,               // Parameters
-            1,                  // Task priority
-            &beepingTaskHandle, // Task handle
-            0                   // Core 0
-        );
+        xTaskCreatePinnedToCore(beepingTask, "BeepingTask",1000,NULL,1,&beepingTaskHandle,0);
         Serial.println("Beeping started.");
-    } else {
-        Serial.println("Beeping already running.");
     }
 }
 
@@ -138,8 +127,6 @@ void endBeeping() {
         beepingTaskHandle = NULL;       // Reset the handle
         digitalWrite(buzzerPin, LOW);  // Ensure the pin is LOW
         Serial.println("Beeping stopped.");
-    } else {
-        Serial.println("No beeping to stop.");
     }
 }
 
