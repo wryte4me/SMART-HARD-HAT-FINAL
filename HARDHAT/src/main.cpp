@@ -61,6 +61,11 @@ const char* wifiPassword = "smartbro";
 #define latitudeAddress 0
 #define longitudeAddress 20
 
+const byte servoLeftPin = 22;
+const byte servoRightPin = 23;
+bool isServoDeployed = false;
+int servoPulse = 10;
+
 // Location saved in EEPROM
 double eepromLatitude = 0.0;    
 double eepromLongitude = 0.0;
@@ -84,6 +89,49 @@ bool beeping = false;
 TinyGPSPlus gps;
 FirebaseAuth firebaseAuth;
 FirebaseConfig firebaseConfig;
+
+Servo servoRight, servoLeft;
+
+//----------------------------------------------------------------
+void setupServo (){
+  servoRight.attach (servoRightPin);
+  servoLeft.attach (servoLeftPin);
+
+  servoRight.write(0);
+  servoLeft.write(180); 
+  Serial.println ("Servo at home");
+  isServoDeployed = false; 
+}
+
+// Function to retract servos to home position
+void retractServo() {
+    if (isServoDeployed) {
+        for (int angle = 180; angle >= 0; angle--) {
+            servoRight.write(angle);
+            servoLeft.write(180 - angle);
+            delay(servoPulse);
+        }
+        Serial.println("Servo retracted to home position.");
+        isServoDeployed = false;
+    } else {
+        Serial.println("Servo already at home position.");
+    }
+}
+
+// Function to deploy servos to full position
+void deployServo() {
+    if (!isServoDeployed) {
+        for (int angle = 0; angle <= 180; angle++) {
+            servoRight.write(angle);
+            servoLeft.write(180 - angle);
+            delay(servoPulse);
+        }
+        Serial.println("Servo deployed to full position.");
+        isServoDeployed = true;
+    } else {
+        Serial.println("Servo already deployed.");
+    }
+}
 
 bool isWorn(int _threshold) {
     int totalReading = 0; 
@@ -278,6 +326,7 @@ void setup() {
     Serial2.begin(9600);
     setupWifi();
     setupFirebase();
+    setupServo();
     pinMode(buzzerPin, OUTPUT);
         // Example usage
      // Start beeping on Core 0
@@ -290,7 +339,7 @@ void loop() {
     checkWifi();
     //delay (1000);
 
-    if (!syncStarted){
+    /*if (!syncStarted){
         if (isWorn(capacitiveThreshold)){
             Serial.println ("Hard hat is worn. Initiate sync now.");
             syncStarted = true;
@@ -309,8 +358,8 @@ void loop() {
         }
         
 
-    }
-    Serial.println ("#");
+    }*/
+    //Serial.println ("#");
 
 
 
@@ -319,4 +368,10 @@ void loop() {
     // if Worn
     // deployCamera();
     //
+
+    deployServo();
+    delay(2000);
+    retractServo();
+    delay(2000);
+
 }
