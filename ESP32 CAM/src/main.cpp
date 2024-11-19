@@ -21,18 +21,30 @@ bool takeNewPhoto = false;
 bool imageCaptured = false;
 bool uploading = false;
 bool imageUploaded = false;
+bool imageWritten  = false;
+bool imageRequested = false;
+bool imageTaskStarted = false;
+bool cameraDeployed = false;
+bool isServoDeployed = false;
+bool isRequestingImage = false;
+
 
 
 String imageUrl = "";
 String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthardhat-22267.appspot.com/o/image%2Finactive.jpg?alt=media&token=092edc42-6923-4ab8-8b62-d3a5584b8043";
 
-
-// Firebase Credentials ----------------------------------------------------------------------------------------------------------
+//                                                                                                                                              //
+// Firebase Credentials 
 #define API_KEY "AIzaSyAy_bQFynVXe_RflYLYgsU0skc8ThOKDYE"                                       // Project API Key              //
 #define DB_URL "https://smarthardhat-22267-default-rtdb.asia-southeast1.firebasedatabase.app/"  // Realtime Database Url        //
 #define STORAGE_BUCKET_ID "smarthardhat-22267.appspot.com"                                      // Firebase Storage Bucket ID   //           
 #define DB_SECRET "Zzb4ijFS1tspaGaC1YRFdIHw44JklfwRnDei7bx1"                                    // Database Secret              //
 
+//                                                                                                                                              //
+// Hard Hat Unit setter
+#define HARDHAT 1   // 
+//#define HARDHAT 2 //
+//                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
 #if HARDHAT == 1                                                        //                                                                      //
   #define USER_EMAIL "hardhat1@smarthardhat.com"                        // Define the user email for hard hat 1                                 //
@@ -88,7 +100,7 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
 
 FirebaseAuth firebaseAuth;
 FirebaseConfig firebaseConfig;
-FirebaseData fbdoImage;
+FirebaseData fbdoImage, fbdoImageUrl, fbdoIsServoDeployed, fbdoIsRequestingImage, fbdoResetImageRequest;
 
 // Function to start Firebase
 void setupFirebase(){ 
@@ -174,7 +186,7 @@ void checkWifi(){
 }
 
 // Initiate the filesystem to save the images
-void initLittleFS(){
+void setupLittleFS(){
   if (!LittleFS.begin(true)) {
     Serial.println("An Error has occurred while mounting LittleFS");
     ESP.restart();
@@ -236,7 +248,7 @@ void setCameraPins (camera_config_t &_config){
     _config.pin_reset = RESET_GPIO_NUM;
 }
 
-void initCamera(){
+void setupCamera(){
     camera_config_t configCamera;
     setCameraPins(configCamera);
     configureCamera(configCamera);
@@ -309,7 +321,6 @@ void captureImage (){
         Serial.println (imageCaptured ? "Image captured": "Image capture failed");
     }
   }
-
 }
 
 void uploadImage (){
@@ -330,20 +341,149 @@ void uploadImage (){
   }
 }
 
+bool firebaseWriteString(FirebaseData &_fbdo, const char *_path, String _data) {
+  bool _writeSuccess = false;
+  // Print debug message with the data and path being written to Firebase
+  Serial.printf("\nFIREBASE: Writing %s to %s -> RESULT: \n", _data.c_str(), _path);
+
+  // Attempt to write the string data to the specified Firebase path
+  if (!Firebase.RTDB.setString(&_fbdo, _path, _data)) {
+    // Print failure message with error reason if writing fails
+    Serial.printf("FAILED! \t\t\t Error: %s \n", _fbdo.errorReason().c_str());
+    _writeSuccess = false;
+  } else {
+    // Print success message if writing is successful
+    Serial.printf("SUCCESS!\n");
+    _writeSuccess = true;
+  }
+  return _writeSuccess;
+}
+
+bool firebaseReadBool(FirebaseData &_fbdo, const char *_path, bool &_boolData) {
+  //Store the print content in a string named debugMessage
+  if (!firebaseReady()) {
+    return false;
+  } else {
+    if (!Firebase.RTDB.getBool(&_fbdo, _path)){
+      Serial.printf("FIREBASE: Read failed due to %s", _fbdo.errorReason().c_str());
+      return false;
+    } else {
+      if (_fbdo.dataType() == "boolean"){
+        _boolData = _fbdo.boolData();
+        Serial.printf("FIREBASE: Successful read from: %s | Value: %o | \n", _path, _boolData);
+      } else {
+        Serial.printf("FIREBASE: Unexpected data type. Please check database path: %s | Expected Data Type: Boolean \t", _path);
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// Function to write bool data to Firebase
+bool firebaseWriteBool(FirebaseData &_fbdo, const char *_path, bool _data) {
+  bool _writeSuccess = false;
+  // Print debug message with the data and path being written to Firebase
+  Serial.printf("FIREBASE: Writing %s to %s -> RESULT: ", _data ? "true" : "false", _path);
+
+  // Attempt to write the data to the specified Firebase path
+  if (!Firebase.RTDB.setBool(&_fbdo, _path, _data)) {
+    // Print failure message with error reason if writing fails
+    Serial.printf("FAILED! \t\t\t Error: %s", _fbdo.errorReason().c_str());
+    _writeSuccess = false;
+  } else {
+    // Print success message if writing is successful
+    Serial.printf("SUCCESS!\n");
+    _writeSuccess = true;
+  }
+  return _writeSuccess;
+}
+
+void writeImageUrl (){
+  if (imageCaptured && imageUploaded){
+    Serial.println ("Writing image URL");
+    if(firebaseReady()){
+        if (firebaseWriteString (fbdoImageUrl, IMAGE_RETURNED_PATH, imageUrl)){
+        imageWritten = true;
+      } else {
+        imageWritten = false;
+        ESP.restart ();
+      }
+    }
+  } else {
+    captureImage ();
+    uploadImage ();
+    writeImageUrl ();
+  }
+}
+
+bool requestingImage(){
+    //return true if the is isRequestingImage node is true
+    return firebaseReadBool (fbdoIsRequestingImage, IS_REQUESTING_IMAGE_PATH, isRequestingImage) && isRequestingImage;
+}
+
+bool isCameraDeployed(){
+    //return true if the isServoDeployed node is true
+    return firebaseReadBool (fbdoIsServoDeployed, IS_SERVO_DEPLOYED_PATH, isServoDeployed) && isServoDeployed;
+
+}
+
+bool fulfillRequest(){
+    //write false to isRequestingImagev node
+    return  firebaseWriteBool(fbdoResetImageRequest, IS_REQUESTING_IMAGE_PATH, false) && 
+            firebaseWriteBool(fbdoResetImageRequest, IS_SERVO_DEPLOYED_PATH, false);
+    
+}
+
 void setup (){
     Serial.begin (115200);
     setupWifi();
     setupFirebase();
-    initCamera();
-    initLittleFS();
-    captureImage();
-    uploadImage();
-
+    setupCamera();
+    setupLittleFS();
 }
 
 void loop (){
     checkWifi();
     
-    //Serial.println ("HELLO WORLD");
-    //delay(1000);
+    if (!imageRequested){
+        if (requestingImage()){
+            Serial.println ("Image request received.");
+            imageRequested = true;
+        }
+    } else {
+        if(cameraDeployed){
+            if (!imageCaptured){
+                Serial.println ("Camera is deployed. Taking image now.");
+                captureImage();
+            }
+
+            if (!imageUploaded){
+                Serial.println ("Uploading image to Firebase storage");
+                uploadImage();
+            }
+
+            if (!imageWritten){
+                Serial.println ("Writing image url to Realtime Database");
+                writeImageUrl();
+            }
+
+            if (imageCaptured && imageUploaded && imageWritten){
+                Serial.println ("An image is successfully captured and uploaded to database");
+                
+                if(fulfillRequest()){
+                    // Reset image capture, upload, and write flags
+                    imageRequested = false;
+                    imageCaptured = false;
+                    imageUploaded = false;
+                    imageWritten = false;
+                    Serial.println ("Reset flags successful");
+                }
+            }
+        } else {
+            Serial.print ("Waiting for camera deployment | ");
+            cameraDeployed = isCameraDeployed ();
+        }
+    }
+    delay(1000);
 }
