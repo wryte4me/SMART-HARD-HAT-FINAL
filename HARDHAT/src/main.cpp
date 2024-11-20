@@ -477,14 +477,14 @@ void loop() {
 
             if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && cameraRetracted && statusUpdated && imageUploaded) {
                 Serial.println("\n\n_____________________________________________________\n\nAll tasks completed successfully. Resetting flags...\n_____________________________________________________\n\n");
+                statusUpdated = false;
                 cameraDeployed = false;
                 cameraDeployedFirebase = false;
                 locationObtained = false;
                 locationUpdated = false;
                 imageUploaded = false;
-                syncStarted = false;
-                statusUpdated = false;
                 cameraRetracted = false;
+                syncStarted = false;
                 Serial.println("Flags reset complete.");
             }
         }
