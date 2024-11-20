@@ -458,9 +458,6 @@ void setup() {
     setupWifi();
     setupFirebase();
     setupServo();
-    deployCamera();
-    delay(5000);
-    retractCamera();
     pinMode(buzzerPin, OUTPUT);
     
         

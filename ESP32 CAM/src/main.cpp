@@ -422,6 +422,8 @@ bool requestingImage(){
     return firebaseReadBool (fbdoIsRequestingImage, IS_REQUESTING_IMAGE_PATH, isRequestingImage) && isRequestingImage;
 }
 
+
+
 bool isCameraDeployed(){
     //return true if the isServoDeployed node is true
     return firebaseReadBool (fbdoIsServoDeployed, IS_SERVO_DEPLOYED_PATH, isServoDeployed) && isServoDeployed;
@@ -447,8 +449,10 @@ void loop (){
     checkWifi();
     
     if (!imageRequested){
+            Serial.print ("Waiting for image request | ");
+            delay(1000);
         if (requestingImage()){
-            Serial.println ("Image request received.");
+            Serial.println ("\n\n________________________\n\nImage request received.\n________________________\n\n");
             imageRequested = true;
         }
     } else {
@@ -477,13 +481,14 @@ void loop (){
                     imageCaptured = false;
                     imageUploaded = false;
                     imageWritten = false;
+                    cameraDeployed = false;
                     Serial.println ("Reset flags successful");
                 }
             }
         } else {
             Serial.print ("Waiting for camera deployment | ");
+            delay(2000);
             cameraDeployed = isCameraDeployed ();
         }
     }
-    delay(1000);
 }
