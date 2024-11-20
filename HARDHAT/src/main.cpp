@@ -139,6 +139,7 @@ void deployCamera() {
     }
 }
 
+// Function to detect whether the hardhat is worn or not
 bool isWorn(int _threshold) {
     int totalReading = 0; 
     int numReadings = 20; 
@@ -408,7 +409,6 @@ void setup() {
 }
 
 void loop() {
-    //readGps();
     checkWifi();
     if (!syncStarted){
         isActive = isWorn(capacitiveThreshold);
