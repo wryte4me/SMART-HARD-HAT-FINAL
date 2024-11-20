@@ -47,36 +47,26 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
 #if HARDHAT == 1                                                        //                                                                      //
-  #define USER_EMAIL "hardhat1@smarthardhat.com"                        // Define the user email for hard hat 1                                 //
-  #define USER_PASSWORD "hardhat1@smarthardhat.com"                     // Define the user password for hard hat 1                              //
-  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat1/isRequestingImg" // Path to check if an image is being requested for hard hat 1          //
-  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat1/isServoDeployed"   // Path to check if the servo is deployed for hard hat 1                //
-  #define IMAGE_RETURNED_PATH "/hardHats/hardHat1/imageReturned"        // Path indicating if the image has been returned for hard hat 1        //
-  #define IMAGE_UPLOADED_PATH "/hardHats/hardHat1/isImageUploaded"      // Path indicating if an image has been uploaded for hard hat 1         //
-  #define FILE_PHOTO_PATH "/user1.jpg"                                  // Local file path for the user photo of hard hat 1                     //
-  #define BUCKET_PHOTO "/image/user1.jpg"                               // Cloud storage path for the user photo of hard hat 1                  //
-  #define IS_IMAGE_UPLOADED_PATH "/hardHats/hardHat1/isImageUploaded"   // Path indicating if an image upload status is updated for hard hat 1  //
-  #define IS_STATUS_UPDATED_PATH "/hardHats/hardHat1/isStatusUpdated"   // Path indicating if the status of the hard hat is updated             //
-  #define IS_HARDHAT_ACTIVE_PATH "/hardHats/hardHat1/isActive"          // Path indicating if hard hat 1 is active                              //
-  #define IS_ESP32CAM_DONE_PATH "/hardHats/hardHat1/isEsp32CamDone"     // Path indicating if the ESP32-CAM process is done for hard hat        //
-  #define LOC_LATITUDE_PATH "/hardHats/hardHat1/locLatitude"            // Path to store the latitude of hard hat 1                             //
-  #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // Path to store the longitude of hard hat 1                            //
+  #define USER_EMAIL "hardhat1@smarthardhat.com"                        // 1 Define the user email for hard hat 1                                 //
+  #define USER_PASSWORD "hardhat1@smarthardhat.com"                     // 2 Define the user password for hard hat 1                              //
+  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat1/isRequestingImg" // 3 Path to check if an image is being requested for hard hat 1          //
+  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat1/isServoDeployed"   // 4 Path to check if the servo is deployed for hard hat 1                //
+  #define IMAGE_RETURNED_PATH "/hardHats/hardHat1/imageReturned"        // 5 Path indicating if the image has been returned for hard hat 1        //
+  #define FILE_PHOTO_PATH "/user1.jpg"                                  // 6 Local file path for the user photo of hard hat 1                     //
+  #define BUCKET_PHOTO "/image/user1.jpg"                               // 7 Cloud storage path for the user photo of hard hat 1                  //
+  #define LOC_LATITUDE_PATH "/hardHats/hardHat1/locLatitude"            // 8 Path to store the latitude of hard hat 1                             //
+  #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // 9 Path to store the longitude of hard hat 1                            //
 
 #elif HARDHAT == 2                                                      //                                                                      //
-  #define USER_EMAIL "hardhat2@smarthardhat.com"                        // Define the user email for hard hat 2                                 //
-  #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // Define the user password for hard hat 2                              //
-  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat2/isRequestingImg" // Path to check if an image is being requested for hard hat 2          //
-  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat2/isServoDeployed"   // Path to check if the servo is deployed for hard hat 2                //
-  #define IMAGE_RETURNED_PATH "/hardHats/hardHat2/imageReturned"        // Path indicating if the image has been returned for hard hat 2        //
-  #define IMAGE_UPLOADED_PATH "/hardHats/hardHat2/isImageUploaded"      // Path indicating if an image has been uploaded for hard hat 2         //
-  #define FILE_PHOTO_PATH "/user2.jpg"                                  // Local file path for the user photo of hard hat 2                     //
-  #define BUCKET_PHOTO "/image/user2.jpg"                               // Cloud storage path for the user photo of hard hat 2                  //
-  #define IS_IMAGE_UPLOADED_PATH "/hardHats/hardHat2/isImageUploaded"   // Path indicating if an image upload status is updated for hard hat 2  //
-  #define IS_STATUS_UPDATED_PATH "/hardHats/hardHat2/isStatusUpdated"   // Path indicating if the status of the hard hat is updated             //
-  #define IS_HARDHAT_ACTIVE_PATH "/hardHats/hardHat2/isActive"          // Path indicating if hard hat 2 is active                              //
-  #define IS_ESP32CAM_DONE_PATH "/hardHats/hardHat2/isEsp32CamDone"     // Path indicating if the ESP32-CAM process is done for hard hat 2      //
-  #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // Path to store the latitude of hard hat 2                             //
-  #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // Path to store the longitude of hard hat 2                            //
+  #define USER_EMAIL "hardhat2@smarthardhat.com"                        // 1 Define the user email for hard hat 2                                 //
+  #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // 2 Define the user password for hard hat 2                              //
+  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat2/isRequestingImg" // 3 Path to check if an image is being requested for hard hat 2          //
+  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat2/isServoDeployed"   // 4 Path to check if the servo is deployed for hard hat 2                //
+  #define IMAGE_RETURNED_PATH "/hardHats/hardHat2/imageReturned"        // 5 Path indicating if the image has been returned for hard hat 2        //
+  #define FILE_PHOTO_PATH "/user2.jpg"                                  // 6 Local file path for the user photo of hard hat 2                     //
+  #define BUCKET_PHOTO "/image/user2.jpg"                               // 7 Cloud storage path for the user photo of hard hat 2                  //
+  #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // 8 Path to store the latitude of hard hat 2                             //
+  #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // 9 Path to store the longitude of hard hat 2                            //
 #endif                                                                  //                                                                      //
 
 
@@ -157,8 +147,6 @@ void fcsUploadCallback(FCS_UploadStatusInfo info){
     }
 }
 
-
-
 void setupWifi(){
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSsid, wifiPassword);
@@ -169,7 +157,7 @@ void setupWifi(){
     }
 }
 
-//# Check wifi network connection status
+// Check wifi network connection status
 void checkWifi(){
   //static bool wifiConnected = false; // Static variable to maintain state between calls
   if (WiFi.status() == WL_CONNECTED){
