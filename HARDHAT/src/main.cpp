@@ -21,7 +21,7 @@ const char* wifiPassword = "SmartHardHat_1";
 
 //                                                                                                                                              //
 // Hard Hat Unit setter
-#define HARDHAT 1   // 
+#define HARDHAT 2   // 
 //#define HARDHAT 2 //
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
@@ -58,6 +58,7 @@ const char* wifiPassword = "SmartHardHat_1";
 const byte servoLeftPin = 22;
 const byte servoRightPin = 23;
 bool isServoDeployed = false;
+bool isServoDeployedFirebase = false;
 bool cameraDeployed = false;
 bool cameraRetracted = false;
 bool cameraDeployedFirebase = false;
@@ -130,8 +131,9 @@ void deployCamera() {
             servoLeft.write(180 - angle);
             delay(servoPulse);
         }
-        Serial.println("Servo deployed to full position.");
         isServoDeployed = true;
+        Serial.println("Servo deployed to full position.");
+        
     } else {
         Serial.println("Servo already deployed.");
     }
@@ -309,7 +311,7 @@ bool firebaseReadBool(FirebaseData &_fbdo, const char *_path, bool &_boolData) {
 // Function to write bool data to Firebase
 bool firebaseWriteBool(FirebaseData &_fbdo, const char *_path, bool _data) {
     bool _writeSuccess = false;
-    Serial.printf("FIREBASE: Writing %s to %s -> RESULT: ", _data ? "true" : "false", _path);
+    Serial.printf("FIREBASE: Writing %s to %s -> RESULT: ", _data ? "TRUE" : "FALSE", _path);
 
     // Attempt to write the data to the specified Firebase path
     if (!Firebase.RTDB.setBool(&_fbdo, _path, _data)) {
@@ -373,8 +375,8 @@ bool updateCameraPositionToFirebase (){
 bool imageUploadDone(){
   //wait for isServoDeployed and isRequestingImage to turn false
   return (firebaseReadBool(fbdoIsRequestingImageRead, IS_REQUESTING_IMAGE_PATH, isRequestingImage) && 
-          firebaseReadBool(fbdoIsServoDeployedRead, IS_SERVO_DEPLOYED_PATH, isServoDeployed) && 
-          !isRequestingImage && !isServoDeployed);
+          firebaseReadBool(fbdoIsServoDeployedRead, IS_SERVO_DEPLOYED_PATH, isServoDeployedFirebase) && 
+          !isRequestingImage && !isServoDeployedFirebase);
 }
 
 // write the GPS location to Firebase Realtime Database
@@ -386,87 +388,7 @@ bool updateStatus (bool _status){
   return firebaseWriteBool(fbdoIsActive, IS_ACTIVE_PATH, _status);
 }
 
-void performTask (){
-  if (!syncStarted){
-      isActive = isWorn(capacitiveThreshold);
-      if (isActive){
-          Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
-          syncStarted = true;
-          statusUpdated = false;
-      } else {
-        if (!statusUpdated){
-          updateStatus(isActive);
-          statusUpdated = true;
-        }
-      }
-      if (beeping){
-          endBeeping();
-          beeping = false;
-      }
-      delay(2000);
-  } else {
-      if (!beeping){
-          startBeeping();
-          beeping = true; 
-      } else {
-          if (!cameraDeployed) {
-              Serial.println("\n\n_____________________\n\nDeploying camera...\n_____________________\n\n");
-              deployCamera();
-              delay(7000);
-              cameraDeployed = true;
-          }
 
-          if (!cameraDeployedFirebase) {
-              Serial.println("Updating camera position to Firebase...");
-              updateCameraPositionToFirebase();
-              cameraDeployedFirebase = true;
-          }
-
-          if (!statusUpdated){
-              statusUpdated = updateStatus(isActive);
-          }
-
-          if (!locationObtained) {
-              Serial.println("\n\n____________________\n\nReading GPS data...\n____________________\n\n");
-              readGps();
-              locationObtained = true; 
-          }
-
-          if (!locationUpdated) {
-              Serial.println("\n\n__________________________________\n\nUpdating location to Firebase...\n__________________________________\n\n");
-              locationUpdated = updateLocationToFirebase(); 
-          }
-
-          if (!imageUploaded) {
-              Serial.println("\n\n__________________\n\nUploading image...\n__________________\n\n");
-              imageUploaded = imageUploadDone();
-              delay(1000);  
-          }
-
-          if (!cameraRetracted){
-              if (cameraDeployed && imageUploaded){
-                  Serial.println("\n\n__________________\n\nRetracting camera...\n__________________\n\n");
-                  retractCamera();
-                  delay(5000);
-                  cameraRetracted = true;
-              }
-          }
-
-          if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && cameraRetracted && statusUpdated && imageUploaded) {
-              Serial.println("\n\n_____________________________________________________\nAll tasks completed successfully. Resetting flags...\n_____________________________________________________\n\n");
-              cameraDeployed = false;
-              cameraDeployedFirebase = false;
-              locationObtained = false;
-              locationUpdated = false;
-              imageUploaded = false;
-              syncStarted = false;
-              statusUpdated = false;
-              cameraRetracted = false;
-              Serial.println("Flags reset complete.");
-          }
-      }
-  }
-}
 
 void setupGps (){
   readFromEeprom();
@@ -488,5 +410,83 @@ void setup() {
 void loop() {
     //readGps();
     checkWifi();
-    performTask();
+    if (!syncStarted){
+        isActive = isWorn(capacitiveThreshold);
+        if (isActive){
+            Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
+            syncStarted = true;
+            statusUpdated = false;
+        } else {
+          if (!statusUpdated){
+            updateStatus(isActive);
+            statusUpdated = true;
+          }
+        }
+        if (beeping){
+            endBeeping();
+            beeping = false;
+        }
+        delay(2000);
+    } else {
+        if (!beeping){
+            startBeeping();
+            delay(4000);
+            beeping = true; 
+        } else {
+            if (!cameraDeployed) {
+                Serial.println("\n\n_____________________\n\nDeploying camera...\n_____________________\n\n");
+                deployCamera();
+                delay(7000);
+                cameraDeployed = true;
+            }
+
+            if (!cameraDeployedFirebase) {
+                Serial.println("Updating camera position to Firebase...");
+                cameraDeployedFirebase = updateCameraPositionToFirebase();
+            }
+
+            if (!statusUpdated){
+                statusUpdated = updateStatus(isActive);
+            }
+
+            if (!locationObtained) {
+                Serial.println("\n\n____________________\n\nReading GPS data...\n____________________\n\n");
+                readGps();
+                locationObtained = true; 
+            }
+
+            if (!locationUpdated) {
+                Serial.println("\n\n__________________________________\n\nUpdating location to Firebase...\n__________________________________\n\n");
+                locationUpdated = updateLocationToFirebase(); 
+            }
+
+            if (!imageUploaded) {
+                Serial.println("\n\n__________________\n\nUploading image...\n__________________\n\n");
+                imageUploaded = imageUploadDone();
+                delay(1000);  
+            }
+
+            if (!cameraRetracted){
+                if (cameraDeployed && imageUploaded){
+                    Serial.println("\n\n__________________\n\nRetracting camera...\n__________________\n\n");
+                    retractCamera();
+                    delay(5000);
+                    cameraRetracted = true;
+                }
+            }
+
+            if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && cameraRetracted && statusUpdated && imageUploaded) {
+                Serial.println("\n\n_____________________________________________________\n\nAll tasks completed successfully. Resetting flags...\n_____________________________________________________\n\n");
+                cameraDeployed = false;
+                cameraDeployedFirebase = false;
+                locationObtained = false;
+                locationUpdated = false;
+                imageUploaded = false;
+                syncStarted = false;
+                statusUpdated = false;
+                cameraRetracted = false;
+                Serial.println("Flags reset complete.");
+            }
+        }
+    }
 }
