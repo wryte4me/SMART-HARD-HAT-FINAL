@@ -42,8 +42,8 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
 
 //                                                                                                                                              //
 // Hard Hat Unit setter
-#define HARDHAT 1   // 
-//#define HARDHAT 2 //
+//#define HARDHAT 1   // 
+#define HARDHAT 2 //
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
 #if HARDHAT == 1                                                        //                                                                      //
@@ -450,7 +450,7 @@ void loop (){
     
     if (!imageRequested){
             Serial.print ("Waiting for image request | ");
-            delay(1000);
+            delay(2000);
         if (requestingImage()){
             Serial.println ("\n\n________________________\n\nImage request received.\n________________________\n\n");
             imageRequested = true;
@@ -458,22 +458,22 @@ void loop (){
     } else {
         if(cameraDeployed){
             if (!imageCaptured){
-                Serial.println ("Camera is deployed. Taking image now.");
+                Serial.println ("\n\n______________________________________\n\nCamera is deployed. Taking image now.\n______________________________________\n\n");
                 captureImage();
             }
 
             if (!imageUploaded){
-                Serial.println ("Uploading image to Firebase storage");
+                Serial.println ("\n______________________________________\n\nUploading image to Firebase storage\n______________________________________\n\n");
                 uploadImage();
             }
-
+                                                              
             if (!imageWritten){
-                Serial.println ("Writing image url to Realtime Database");
+                Serial.println ("\n______________________________________\n\nWriting image url to Realtime Database\n______________________________________\n\n");
                 writeImageUrl();
             }
 
             if (imageCaptured && imageUploaded && imageWritten){
-                Serial.println ("An image is successfully captured and uploaded to database");
+                Serial.println ("\n___________________________________________________________________________________\n\n An image is successfully captured and uploaded to database. Ressetting task flags.\n__________________________________________________________________________________\n\n");
                 
                 if(fulfillRequest()){
                     // Reset image capture, upload, and write flags
@@ -482,7 +482,7 @@ void loop (){
                     imageUploaded = false;
                     imageWritten = false;
                     cameraDeployed = false;
-                    Serial.println ("Reset flags successful");
+                    Serial.println ("\n______________________\n\nReset flags successful\n______________________\n\n");
                 }
             }
         } else {
