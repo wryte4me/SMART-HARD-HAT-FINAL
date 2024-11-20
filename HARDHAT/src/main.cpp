@@ -390,7 +390,7 @@ void performTask (){
   if (!syncStarted){
       isActive = isWorn(capacitiveThreshold);
       if (isActive){
-          Serial.println ("Hard hat is worn. Initiate sync now.");
+          Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
           syncStarted = true;
           statusUpdated = false;
       } else {
@@ -403,15 +403,16 @@ void performTask (){
           endBeeping();
           beeping = false;
       }
-
+      delay(2000);
   } else {
       if (!beeping){
           startBeeping();
           beeping = true; 
       } else {
           if (!cameraDeployed) {
-              Serial.println("Deploying camera...");
+              Serial.println("\n\n_____________________\n\nDeploying camera...\n_____________________\n\n");
               deployCamera();
+              delay(7000);
               cameraDeployed = true;
           }
 
@@ -426,29 +427,33 @@ void performTask (){
           }
 
           if (!locationObtained) {
-              Serial.println("Reading GPS data...");
+              Serial.println("\n\n____________________\n\nReading GPS data...\n____________________\n\n");
               readGps();
               locationObtained = true; 
           }
 
           if (!locationUpdated) {
-              Serial.println("Updating location to Firebase...");
+              Serial.println("\n\n__________________________________\n\nUpdating location to Firebase...\n__________________________________\n\n");
               locationUpdated = updateLocationToFirebase(); 
           }
 
           if (!imageUploaded) {
-              Serial.println("Uploading image...");
+              Serial.println("\n\n__________________\n\nUploading image...\n__________________\n\n");
               imageUploaded = imageUploadDone();
               delay(1000);  
           }
 
-          if (cameraDeployed && !cameraRetracted){
-              retractCamera();
-              cameraRetracted = true;
+          if (!cameraRetracted){
+              if (cameraDeployed && imageUploaded){
+                  Serial.println("\n\n__________________\n\nRetracting camera...\n__________________\n\n");
+                  retractCamera();
+                  delay(5000);
+                  cameraRetracted = true;
+              }
           }
 
-          if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && statusUpdated && imageUploaded) {
-              Serial.println("All tasks completed successfully. Resetting flags...");
+          if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && cameraRetracted && statusUpdated && imageUploaded) {
+              Serial.println("\n\n_____________________________________________________\nAll tasks completed successfully. Resetting flags...\n_____________________________________________________\n\n");
               cameraDeployed = false;
               cameraDeployedFirebase = false;
               locationObtained = false;
@@ -478,14 +483,10 @@ void setup() {
     pinMode(buzzerPin, OUTPUT);
 
     updateStatus(isActive);
-
-    
-        
 }
 
 void loop() {
     //readGps();
     checkWifi();
     performTask();
-    delay(2000);
 }
