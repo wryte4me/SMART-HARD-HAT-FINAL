@@ -26,37 +26,30 @@ const char* wifiPassword = "SmartHardHat_1";
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
 #if HARDHAT == 1                                                        //                                                                      //
-  #define USER_EMAIL "hardhat1@smarthardhat.com"                        // Define the user email for hard hat 1                                 //
-  #define USER_PASSWORD "hardhat1@smarthardhat.com"                     // Define the user password for hard hat 1                              //
-  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat1/isRequestingImg" // Path to check if an image is being requested for hard hat 1          //
-  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat1/isServoDeployed"   // Path to check if the servo is deployed for hard hat 1                //
-  #define IMAGE_RETURNED_PATH "/hardHats/hardHat1/imageReturned"        // Path indicating if the image has been returned for hard hat 1        //
-  #define IMAGE_UPLOADED_PATH "/hardHats/hardHat1/isImageUploaded"      // Path indicating if an image has been uploaded for hard hat 1         //
-  #define FILE_PHOTO_PATH "/user1.jpg"                                  // Local file path for the user photo of hard hat 1                     //
-  #define BUCKET_PHOTO "/image/user1.jpg"                               // Cloud storage path for the user photo of hard hat 1                  //
-  #define IS_IMAGE_UPLOADED_PATH "/hardHats/hardHat1/isImageUploaded"   // Path indicating if an image upload status is updated for hard hat 1  //
-  #define IS_STATUS_UPDATED_PATH "/hardHats/hardHat1/isStatusUpdated"   // Path indicating if the status of the hard hat is updated             //
-  #define IS_HARDHAT_ACTIVE_PATH "/hardHats/hardHat1/isActive"          // Path indicating if hard hat 1 is active                              //
-  #define IS_ESP32CAM_DONE_PATH "/hardHats/hardHat1/isEsp32CamDone"     // Path indicating if the ESP32-CAM process is done for hard hat        //
-  #define LOC_LATITUDE_PATH "/hardHats/hardHat1/locLatitude"            // Path to store the latitude of hard hat 1                             //
-  #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // Path to store the longitude of hard hat 1                            //
+  #define USER_EMAIL "hardhat1@smarthardhat.com"                        // 1 Define the user email for hard hat 1                                 //
+  #define USER_PASSWORD "hardhat1@smarthardhat.com"                     // 2 Define the user password for hard hat 1                              //
+  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat1/isRequestingImg" // 3 Path to check if an image is being requested for hard hat 1          //
+  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat1/isServoDeployed"   // 4 Path to check if the servo is deployed for hard hat 1                //
+  #define IMAGE_RETURNED_PATH "/hardHats/hardHat1/imageReturned"        // 5 Path indicating if the image has been returned for hard hat 1        //
+  #define FILE_PHOTO_PATH "/user1.jpg"                                  // 6 Local file path for the user photo of hard hat 1                     //
+  #define BUCKET_PHOTO "/image/user1.jpg"                               // 7 Cloud storage path for the user photo of hard hat 1                  //
+  #define LOC_LATITUDE_PATH "/hardHats/hardHat1/locLatitude"            // 8 Path to store the latitude of hard hat 1                             //
+  #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // 9 Path to store the longitude of hard hat 1                            //
+  #define IS_ACTIVE_PATH "/hardHats/hardHat1/isActive"                  // 10 Path to store status of hard hat 1
 
 #elif HARDHAT == 2                                                      //                                                                      //
-  #define USER_EMAIL "hardhat2@smarthardhat.com"                        // Define the user email for hard hat 2                                 //
-  #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // Define the user password for hard hat 2                              //
-  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat2/isRequestingImg" // Path to check if an image is being requested for hard hat 2          //
-  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat2/isServoDeployed"   // Path to check if the servo is deployed for hard hat 2                //
-  #define IMAGE_RETURNED_PATH "/hardHats/hardHat2/imageReturned"        // Path indicating if the image has been returned for hard hat 2        //
-  #define IMAGE_UPLOADED_PATH "/hardHats/hardHat2/isImageUploaded"      // Path indicating if an image has been uploaded for hard hat 2         //
-  #define FILE_PHOTO_PATH "/user2.jpg"                                  // Local file path for the user photo of hard hat 2                     //
-  #define BUCKET_PHOTO "/image/user2.jpg"                               // Cloud storage path for the user photo of hard hat 2                  //
-  #define IS_IMAGE_UPLOADED_PATH "/hardHats/hardHat2/isImageUploaded"   // Path indicating if an image upload status is updated for hard hat 2  //
-  #define IS_STATUS_UPDATED_PATH "/hardHats/hardHat2/isStatusUpdated"   // Path indicating if the status of the hard hat is updated             //
-  #define IS_HARDHAT_ACTIVE_PATH "/hardHats/hardHat2/isActive"          // Path indicating if hard hat 2 is active                              //
-  #define IS_ESP32CAM_DONE_PATH "/hardHats/hardHat2/isEsp32CamDone"     // Path indicating if the ESP32-CAM process is done for hard hat 2      //
-  #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // Path to store the latitude of hard hat 2                             //
-  #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // Path to store the longitude of hard hat 2                            //
-#endif   
+  #define USER_EMAIL "hardhat2@smarthardhat.com"                        // 1 Define the user email for hard hat 2                                 //
+  #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // 2 Define the user password for hard hat 2                              //
+  #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat2/isRequestingImg" // 3 Path to check if an image is being requested for hard hat 2          //
+  #define IS_SERVO_DEPLOYED_PATH "/hardHats/hardHat2/isServoDeployed"   // 4 Path to check if the servo is deployed for hard hat 2                //
+  #define IMAGE_RETURNED_PATH "/hardHats/hardHat2/imageReturned"        // 5 Path indicating if the image has been returned for hard hat 2        //
+  #define FILE_PHOTO_PATH "/user2.jpg"                                  // 6 Local file path for the user photo of hard hat 2                     //
+  #define BUCKET_PHOTO "/image/user2.jpg"                               // 7 Cloud storage path for the user photo of hard hat 2                  //
+  #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // 8 Path to store the latitude of hard hat 2                             //
+  #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // 9 Path to store the longitude of hard hat 2                            //
+  #define IS_ACTIVE_PATH "/hardHats/hardHat2/isActive"                  // 10 Path to store status of hard hat 2
+
+#endif     
 
 #define eepromSize 256
 #define latitudeAddress 0
@@ -66,9 +59,12 @@ const byte servoLeftPin = 22;
 const byte servoRightPin = 23;
 bool isServoDeployed = false;
 bool cameraDeployed = false;
+bool cameraRetracted = false;
 bool cameraDeployedFirebase = false;
 bool locationObtained = false;
 bool locationUpdated = false;
+bool statusUpdated = false;
+bool isActive = false;
 bool imageUploaded = false;
 int servoPulse = 10;
 
@@ -88,6 +84,7 @@ bool wifiConnected = false;
 int capacitiveThreshold = 25;
 const byte touchPin = 27;
 const byte buzzerPin = 19;
+bool isRequestingImage = false;
 
 bool syncStarted = false;
 bool beeping = false;
@@ -95,7 +92,7 @@ bool beeping = false;
 TinyGPSPlus gps;
 FirebaseAuth firebaseAuth;
 FirebaseConfig firebaseConfig;
-FirebaseData fbdo, fbdoLocLatitude, fbdoLocLongitude;
+FirebaseData fbdo, fbdoLocLatitude, fbdoLocLongitude, fbdoIsRequestingImageWrite, fbdoIsRequestingImageRead, fbdoIsServoDeployedRead, fbdoIsServoDeployedWrite, fbdoIsActive;
 
 Servo servoRight, servoLeft;
 
@@ -164,7 +161,7 @@ TaskHandle_t beepingTaskHandle = NULL; // Task handle for managing the beeping t
 // Task to toggle the buzzer pin on Core 0
 void beepingTask(void *parameter) {
     bool state = false;
-    while (true) { state = !state; digitalWrite(buzzerPin, state ? HIGH : LOW); delay(state ? 500 : 2000);}
+    while (true) { state = !state; digitalWrite(buzzerPin, state ? HIGH : LOW); delay(state ? 500 : 1000);}
 }
 
 // Function to start beeping (create the task on Core 0)
@@ -344,13 +341,6 @@ bool firebaseWriteFloat(FirebaseData &_fbdo, const char *_path, double _data) {
   return _writeSuccess;
 }
 
-
-// write the GPS location to Firebase Realtime Database
-bool updateLocationToFirebase(){
-  return firebaseWriteFloat(fbdoLocLatitude, LOC_LATITUDE_PATH, newLatitude) && firebaseWriteFloat(fbdoLocLongitude, LOC_LONGITUDE_PATH, newLongitude);
-}
-
-
 void setupWifi(){
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSsid, wifiPassword);
@@ -376,22 +366,39 @@ void setupFirebase(){
 
 bool updateCameraPositionToFirebase (){
   //write true to isServoDeployed and isRequestingImage node 
-  return true;
+  return  firebaseWriteBool(fbdoIsRequestingImageWrite, IS_REQUESTING_IMAGE_PATH, true) && 
+          firebaseWriteBool(fbdoIsServoDeployedWrite, IS_SERVO_DEPLOYED_PATH, true);
 }
 
 bool imageUploadDone(){
   //wait for isServoDeployed and isRequestingImage to turn false
-  return true;
+  return (firebaseReadBool(fbdoIsRequestingImageRead, IS_REQUESTING_IMAGE_PATH, isRequestingImage) && 
+          firebaseReadBool(fbdoIsServoDeployedRead, IS_SERVO_DEPLOYED_PATH, isServoDeployed) && 
+          !isRequestingImage && !isServoDeployed);
 }
 
+// write the GPS location to Firebase Realtime Database
+bool updateLocationToFirebase(){
+  return firebaseWriteFloat(fbdoLocLatitude, LOC_LATITUDE_PATH, newLatitude) && firebaseWriteFloat(fbdoLocLongitude, LOC_LONGITUDE_PATH, newLongitude);
+}
 
+bool updateStatus (bool _status){
+  return firebaseWriteBool(fbdoIsActive, IS_ACTIVE_PATH, _status);
+}
 
 void performTask (){
   if (!syncStarted){
-      if (isWorn(capacitiveThreshold)){
+      isActive = isWorn(capacitiveThreshold);
+      if (isActive){
           Serial.println ("Hard hat is worn. Initiate sync now.");
           syncStarted = true;
-      } 
+          statusUpdated = false;
+      } else {
+        if (!statusUpdated){
+          updateStatus(isActive);
+          statusUpdated = true;
+        }
+      }
       if (beeping){
           endBeeping();
           beeping = false;
@@ -414,6 +421,10 @@ void performTask (){
               cameraDeployedFirebase = true;
           }
 
+          if (!statusUpdated){
+              statusUpdated = updateStatus(isActive);
+          }
+
           if (!locationObtained) {
               Serial.println("Reading GPS data...");
               readGps();
@@ -422,8 +433,7 @@ void performTask (){
 
           if (!locationUpdated) {
               Serial.println("Updating location to Firebase...");
-              updateLocationToFirebase();
-              locationUpdated = true; 
+              locationUpdated = updateLocationToFirebase(); 
           }
 
           if (!imageUploaded) {
@@ -432,7 +442,12 @@ void performTask (){
               delay(1000);  
           }
 
-          if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && imageUploaded) {
+          if (cameraDeployed && !cameraRetracted){
+              retractCamera();
+              cameraRetracted = true;
+          }
+
+          if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && statusUpdated && imageUploaded) {
               Serial.println("All tasks completed successfully. Resetting flags...");
               cameraDeployed = false;
               cameraDeployedFirebase = false;
@@ -440,6 +455,8 @@ void performTask (){
               locationUpdated = false;
               imageUploaded = false;
               syncStarted = false;
+              statusUpdated = false;
+              cameraRetracted = false;
               Serial.println("Flags reset complete.");
           }
       }
@@ -459,6 +476,9 @@ void setup() {
     setupFirebase();
     setupServo();
     pinMode(buzzerPin, OUTPUT);
+
+    updateStatus(isActive);
+
     
         
 }
@@ -466,5 +486,6 @@ void setup() {
 void loop() {
     //readGps();
     checkWifi();
-    //performTask();
+    performTask();
+    delay(2000);
 }
