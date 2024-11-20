@@ -42,8 +42,8 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
 
 //                                                                                                                                              //
 // Hard Hat Unit setter
-//#define HARDHAT 1   // 
-#define HARDHAT 2 //
+#define HARDHAT 1   // 
+//#define HARDHAT 2 //
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
 #if HARDHAT == 1                                                        //                                                                      //
