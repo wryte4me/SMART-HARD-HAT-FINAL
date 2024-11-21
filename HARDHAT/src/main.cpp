@@ -68,6 +68,7 @@ bool statusUpdated = false;
 bool isActive = false;
 bool imageUploaded = false;
 int servoPulse = 10;
+bool updatedOnce = false;
 
 // Location saved in EEPROM
 double eepromLatitude = 14.198757;    
@@ -245,12 +246,6 @@ void readGps (){
             newLatitude = gps.location.lat();
             newLongitude = gps.location.lng();
             Serial.printf("New Latitude: %.6f New Longitude:  %.6f\n", newLatitude,newLongitude);
-
-            if (newLatitude != currentLatitude || newLongitude != currentLongitude){
-                //writeToEeprom();
-                //updateLocationToFirebase();
-            }
-
         } else {
             Serial.println ("GPS location is invalid");
             readFromEeprom();
@@ -414,12 +409,15 @@ void loop() {
         isActive = isWorn(capacitiveThreshold);
         if (isActive){
             Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
-            syncStarted = true;
-            statusUpdated = false;
+            if (!updatedOnce){
+               syncStarted = true;
+               statusUpdated = false;
+            }
         } else {
           if (!statusUpdated){
             updateStatus(isActive);
             statusUpdated = true;
+            updatedOnce = false;
           }
         }
         if (beeping){
@@ -485,6 +483,7 @@ void loop() {
                 imageUploaded = false;
                 cameraRetracted = false;
                 syncStarted = false;
+                updatedOnce = true;
                 Serial.println("Flags reset complete.");
             }
         }
