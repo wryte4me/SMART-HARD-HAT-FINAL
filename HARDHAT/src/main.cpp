@@ -21,7 +21,7 @@ const char* wifiPassword = "SmartHardHat_1";
 
 //                                                                                                                                              //
 // Hard Hat Unit setter
-#define HARDHAT 2   // 
+#define HARDHAT 1   // 
 //#define HARDHAT 2 //
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
@@ -408,10 +408,10 @@ void loop() {
     if (!syncStarted){
         isActive = isWorn(capacitiveThreshold);
         if (isActive){
-            Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
             if (!updatedOnce){
-               syncStarted = true;
-               statusUpdated = false;
+                Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
+                syncStarted = true;
+                statusUpdated = false;
             }
         } else {
           if (!statusUpdated){
