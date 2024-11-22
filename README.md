@@ -142,6 +142,8 @@ Loop:
     Delay for a defined interval
 ```
 
+
+
 ## Web-Based System Development
 
 The development of the web-based monitoring system for the Smart Hard Hat involved several key steps, from setting up the Firebase project to deploying the website. Below is an overview of the process:
@@ -199,29 +201,329 @@ Overall, the ESP32 CAM development phase effectively enabled the Smart Hard Hat 
 The development of the ESP32 DevKit functionality for the Smart Hard Hat focused on implementing wear detection and managing interactions between components. The following outlines the process and key components of this development.
 
 ### Algorithm Overview
-The algorithm for the ESP32 DevKit was designed to perform the following steps:
+The algorithm for the ESP32 DevKit was designed as follows:
 
-1. **Wait for Capacitive Touch Sensor**: The system continuously monitored the capacitive touch sensor to detect whether the hard hat was being worn.
+```cpp
+void loop() {
+    // Check the WiFi connection to ensure it remains active for updates to Firebase
+    checkWifi();
+    
+    // If synchronization hasn't started, monitor the hard hat status
+    if (!syncStarted){
+        // Check if the hard hat is worn using a capacitive sensor
+        isActive = isWorn(capacitiveThreshold);
+        
+        // If the hard hat is worn, begin synchronization
+        if (isActive){
+            Serial.println ("\n\n----------------------------------------\n\nHard hat is worn. Initiate sync now.\n----------------------------------------\n\n");
+            syncStarted = true;  // Mark synchronization as started
+            statusUpdated = false;  // Reset the status update flag
+        } else {
+            // If the hard hat is not worn, update Firebase with the inactive status
+            if (!statusUpdated){
+                updateStatus(isActive);  // Update the status in Firebase
+                statusUpdated = true;  // Set the flag that status has been updated
+            }
+        }
 
-2. **Turn On Beeper Buzzer**: Upon detection of the hard hat being worn, the algorithm activated a buzzer to notify the user.
+        // If the beeping alarm was active, stop it
+        if (beeping){
+            endBeeping();
+            beeping = false;  // Reset beeping flag
+        }
+        
+        delay(2000);  // Wait before the next iteration
+    } else {
+        // Once synchronization has started, activate beeping alarm for alert purposes
+        if (!beeping){
+            startBeeping();
+            delay(4000);  // Allow the beep to sound for 4 seconds
+            beeping = true;  // Mark beeping as active
+        } else {
+            // Deploy the camera if not already deployed
+            if (!cameraDeployed) {
+                Serial.println("Deploying camera...");
+                deployCamera();
+                delay(7000);  // Wait for the camera to deploy
+                cameraDeployed = true;  // Mark the camera as deployed
+            }
 
-3. **Deploy Camera Using Servo**: The servo motor was triggered to deploy the camera, positioning it for image capture.
+            // Update the camera position to Firebase if not already updated
+            if (!cameraDeployedFirebase) {
+                Serial.println("Updating camera position to Firebase...");
+                cameraDeployedFirebase = updateCameraPositionToFirebase();
+            }
 
-4. **Update Camera Status in Firebase**: The algorithm wrote an update to the Firebase Realtime Database to signal the ESP32 CAM to initiate image capture.
+            // Ensure the system status is up to date in Firebase
+            if (!statusUpdated){
+                statusUpdated = updateStatus(isActive);
+            }
 
-5. **Wait for Capture Success**: The system waited for the status in the database to confirm that the image capture was successful.
+            // Read the GPS location if not already obtained
+            if (!locationObtained) {
+                Serial.println("Reading GPS data...");
+                readGps();
+                locationObtained = true;  // Mark location as obtained
+            }
 
-6. **Retract Camera**: Once capture success was confirmed, the camera was retracted back to its original position.
+            // Update the location in Firebase if not already updated
+            if (!locationUpdated) {
+                Serial.println("Updating location to Firebase...");
+                locationUpdated = updateLocationToFirebase();  // Update location data in Firebase
+            }
+
+            // Upload the image if not already uploaded
+            if (!imageUploaded) {
+                Serial.println("Uploading image...");
+                imageUploaded = imageUploadDone();  // Upload the image
+                delay(1000);  // Delay for 1 second before continuing
+            }
+
+            // Retract the camera once the image is uploaded
+            if (!cameraRetracted){
+                if (cameraDeployed && imageUploaded){
+                    Serial.println("Retracting camera...");
+                    retractCamera();
+                    delay(5000);  // Wait for the camera to retract
+                    cameraRetracted = true;  // Mark camera as retracted
+                }
+            }
+
+            // Once all tasks (camera deployment, image upload, GPS update, etc.) are completed, reset flags
+            if (cameraDeployed && cameraDeployedFirebase && locationObtained && locationUpdated && cameraRetracted && statusUpdated && imageUploaded) {
+                Serial.println("All tasks completed successfully. Resetting flags...");
+                
+                // Reset all flags for the next operational cycle
+                statusUpdated = false;
+                cameraDeployed = false;
+                cameraDeployedFirebase = false;
+                locationObtained = false;
+                locationUpdated = false;
+                imageUploaded = false;
+                cameraRetracted = false;
+                syncStarted = false;
+
+                Serial.println("Flags reset complete.");
+            }
+        }
+    }
+}
+```
+
+The **`loop()`** function is the core logic for managing the operation of a smart hard hat system. Here's a summary of its functionality:
+
+#### 1. **WiFi Connectivity**
+The loop starts by checking the WiFi connection using `checkWifi()`, ensuring the device remains connected for real-time updates to the Firebase Realtime Database.
+
+#### 2. **Monitoring the Hard Hat's Status**
+- **When Sync is Not Started**:
+  - The system checks if the hard hat is being worn (`isWorn(capacitiveThreshold)`).
+  - If the hard hat is worn, it begins the synchronization process (`syncStarted = true`) and resets the `statusUpdated` flag to handle updates.
+  - If the hard hat is not worn, it updates the Firebase database with the inactive status and ensures the beeping alarm is turned off if it was previously active.
+
+#### 3. **Synchronization Process**
+- **Alarm Activation**:
+  - If synchronization has started, the system initiates a beeping alarm (`startBeeping()`) for alert purposes.
+- **Camera Deployment and Image Upload**:
+  - Deploys the camera (`deployCamera()`), uploads the captured image, and retracts the camera once the upload is complete.
+  - Updates the camera position to Firebase after deployment.
+- **GPS Data Handling**:
+  - Reads the GPS location (`readGps()`) and updates it to Firebase to track the hard hat's location.
+- **Status Update**:
+  - Ensures the system status (`isActive`) is updated in Firebase.
+
+#### 4. **Completion and Flag Reset**
+Once all tasks (camera deployment, image upload, GPS update, and status synchronization) are completed:
+- The system resets all flags (`statusUpdated`, `cameraDeployed`, `locationObtained`, etc.) to their default state.
+- Prints a confirmation message and prepares the system for the next operational cycle.
+
+#### 5. **Delay Mechanism**
+Delays are strategically placed to ensure:
+- Proper time intervals between tasks.
+- Prevention of unnecessary loops or resource hogging.
+
+This structured approach ensures that the system operates efficiently and reliably while keeping real-time safety and monitoring data updated.
+
+1. **Wear detection**
+
+The system continuously monitor the capacitive touch sensor to detect whether the hard hat was being worn. For better detection accuracy, the function reads the capacitive touch sensor multiple times and compare the average of the readings to the `treshold`. The treshold is determined by the reading of the touch sensor when the hardhat is fully worn. This prevents tampering or cheating the sensor, instead of the initial design that uses a limit switch and gyroscope for orientation detection.
+
+```cpp
+// Function to detect whether the hardhat is worn or not
+bool isWorn(int _threshold) {
+    int totalReading = 0; 
+    int numReadings = 20; 
+    int singleReading = 0;
+    bool _result = false;
+
+    Serial.print("Readings : ");
+    for (int i = 0; i < numReadings; i++) {
+        singleReading = touchRead(touchPin); 
+        totalReading += singleReading; 
+        Serial.printf("%d | ", singleReading);
+        delay(50);
+    }
+    int averageReading = totalReading / numReadings;
+    _result = averageReading < _threshold;
+    Serial.printf("Average Reading: %d, Result: %s\n", averageReading, _result ? "True (Worn)" : "False (Not Worn)");
+    return _result;
+}
+```
+
+2. **Buzzer to notify the user before capturing image**: Upon detection of the hard hat being worn, the algorithm activates a buzzer to notify the user. After the buzzer beeps three times, the camera will be deployed in front of the user. The buzzer will continue beeping until an image is successfully uploaded in the database. This function utilizes the dual core capability of the NodeMCU ESP32, the main program is running at `core1` while the beeping task will be handled by `core0` which enables the use of blocking function `delay()` without affecting the main program.
+```cpp
+TaskHandle_t beepingTaskHandle = NULL; // Task handle for managing the beeping task
+
+// Task to toggle the buzzer pin on Core 0
+void beepingTask(void *parameter) {
+    bool state = false;
+    while (true) { state = !state; digitalWrite(buzzerPin, state ? HIGH : LOW); delay(state ? 500 : 1000);}
+}
+
+// Function to start beeping (create the task on Core 0)
+void startBeeping() {
+    if (beepingTaskHandle == NULL) { // Ensure the task isn't already running
+        xTaskCreatePinnedToCore(beepingTask, "BeepingTask",1000,NULL,1,&beepingTaskHandle,0);
+        Serial.println("Beeping started.");
+    }
+}
+
+// Function to stop beeping (delete the task on Core 0)
+void endBeeping() {
+    if (beepingTaskHandle != NULL) { // Check if the task is running
+        vTaskDelete(beepingTaskHandle); // Delete the task
+        beepingTaskHandle = NULL;       // Reset the handle
+        digitalWrite(buzzerPin, LOW);  // Ensure the pin is LOW
+        Serial.println("Beeping stopped.");
+    }
+}
+```
+
+3. **Deploy Camera Using Servo**: The servo motor was triggered to deploy the camera, positioning it for image capture. The function utilizes one degree at a time movement to avoid large spike in current draw which might affect the microcontroller, while the  `servoPulse` interval sets the speed of the movement of the servo to ensure smooth movement from initial position to capture image positon and vice versa.
+
+```cpp
+// Function to deploy servos to full position
+void deployCamera() {
+    if (!isServoDeployed) {
+        for (int angle = 0; angle <= 180; angle++) {
+            servoRight.write(angle);
+            servoLeft.write(180 - angle);
+            delay(servoPulse);
+        }
+        isServoDeployed = true;
+        Serial.println("Servo deployed to full position.");
+        
+    } else {
+        Serial.println("Servo already deployed.");
+    }
+}
+
+```
+
+4. **Update Camera Status in Firebase**: The algorithm of the ESP32-CAM is programmed to wait for image request and the camera deployed. Therefore, the main controller should write `true` in the `/isRequestingImage` and `isServoDeployed` node in the realtime database. The function returns the success of the write operation to Firebase.
+
+```cpp
+bool updateCameraPositionToFirebase (){
+    //write true to isServoDeployed and isRequestingImage node 
+    return  firebaseWriteBool(fbdoIsRequestingImageWrite, IS_REQUESTING_IMAGE_PATH, true) && 
+            firebaseWriteBool(fbdoIsServoDeployedWrite, IS_SERVO_DEPLOYED_PATH, true);
+}
+```
+
+5. **Wait for Capture Success**: After successful capturing and uploading an image to the database, the ESP32-CAM resets the `/isRequestingImage` and ```isServoDeployed` nodes to `false`, this indicates the the image is successfully uploaded. The function returns `true` of the read operations are successful and the value from the nodes are both false.
+```cpp
+bool imageUploadDone(){
+  //wait for isServoDeployed and isRequestingImage to turn false
+  return (firebaseReadBool(fbdoIsRequestingImageRead, IS_REQUESTING_IMAGE_PATH, isRequestingImage) && 
+          firebaseReadBool(fbdoIsServoDeployedRead, IS_SERVO_DEPLOYED_PATH, isServoDeployedFirebase) && 
+          !isRequestingImage && !isServoDeployedFirebase);
+}
+
+```
+
+6. **Retract Camera**: Once capture and upload success was confirmed, the camera was retracted back to its original position. This function is just the inverse of the deploy camera function. 
+```cpp
+// Function to retract servos to home position
+void retractCamera() {
+    if (isServoDeployed) {
+        for (int angle = 180; angle >= 0; angle--) {
+            servoRight.write(angle);
+            servoLeft.write(180 - angle);
+            delay(servoPulse);
+        }
+        Serial.println("Servo retracted to home position.");
+        isServoDeployed = false;
+    } else {
+        Serial.println("Servo already at home position.");
+    }
+}
+```
 
 7. **Turn Off Beeping**: The beeping of the buzzer was disabled.
+```cpp
+```
 
-8. **Get Location**: The GPS module was activated to retrieve the current location of the hard hat.
+8. **Get Location**: The Get Location function retrieves the GPS coordinates of the hard hat by reading data from the GPS module until a valid location is obtained or a 60-second timeout is reached. The function checks for available GPS data on `Serial2`, parses it using `gps.encode(c)`, and validates the location with gps.location.isValid(). If valid, it updates the coordinates and logs them. If invalid, it retries while printing a message. A timeout mechanism ensures the program doesn’t hang indefinitely; if no valid location is found within the limit, the system restarts via `ESP.restart()`. This approach balances reliability and efficiency, allowing the microcontroller to recover gracefully from prolonged GPS acquisition failures.
 
-9. **Update Location in Firebase**: The retrieved location data was sent to the Firebase Realtime Database for monitoring.
+```cpp
+// Function to read GPS coordinates
+void readGps() {
+    bool validLocation = false;
+    unsigned long maxWaitTime = 60000; // 60 seconds timeout
+    unsigned long startTime = millis(); // Record the start time
+
+    // Loop until a valid GPS location is obtained or timeout
+    while (!validLocation) {
+        if (Serial2.available() > 0) {
+            while (Serial2.available()) {
+                char c = Serial2.read();
+                gps.encode(c); // Feed the character to the GPS library
+            }
+            if (gps.location.isValid()) {
+                validLocation = true;
+                newLatitude = gps.location.lat();
+                newLongitude = gps.location.lng();
+                Serial.println("GPS location is valid");
+                Serial.printf("New Latitude: %.6f, New Longitude: %.6f\n", newLatitude, newLongitude);
+            } else {
+                Serial.println("GPS reading is invalid, retrying...");
+            }
+        } else {
+            delay(100); // Small delay to avoid busy-waiting
+        }
+
+        // Check if the timeout has been reached
+        if (millis() - startTime > maxWaitTime) {
+            Serial.println("GPS reading timed out.");
+            ESP.restart();
+        }
+    }
+}
+
+
+
+```
+
+9. **Update Location in Firebase**: This function ensures the GPS location of the hard hat is recorded in the Firebase Realtime Database for monitoring purposes. It uses the `firebaseWriteFloat()` function to write the latitude and longitude values to their respective database paths (`LOC_LATITUDE_PATH` and `LOC_LONGITUDE_PATH`). The function returns `true` only if both write operations are successful, allowing for efficient error checking. This implementation provides a straightforward way to keep the database updated with the device’s current location, enabling real-time tracking and monitoring.
+```cpp
+// write the GPS location to Firebase Realtime Database 
+bool updateLocationToFirebase(){
+  return firebaseWriteFloat(fbdoLocLatitude, LOC_LATITUDE_PATH, newLatitude) && firebaseWriteFloat(fbdoLocLongitude, LOC_LONGITUDE_PATH, newLongitude);
+}
+```
 
 10. **Wait for Unwear Detection**: The system continued to monitor the capacitive touch sensor for a signal indicating that the hard hat was no longer being worn.
+```cpp
+```
 
-11. **Set Inactive in Database**: Once unwear detection occurred, the algorithm updated the Firebase database to set the status to inactive.
+11. **Set Inactive in Database**: Once unwear detection occurred, the algorithm updated the Firebase database to set the status to inactive. 
+```cpp
+bool updateStatus (bool _status){
+  return firebaseWriteBool(fbdoIsActive, IS_ACTIVE_PATH, _status);
+}
+```
+
+The `updateStatus` function determines whether the hard hat is currently being worn and updates this information in the Firebase Realtime Database. It takes a boolean parameter `_status` that indicates the wearing status of the hard hat (`true` for worn, `false` for not worn). The function uses the `firebaseWriteBool()` method to write this status to the database at the path specified by `IS_ACTIVE_PATH`. It returns `true` if the operation is successful. This function ensures real-time monitoring of the hard hat's usage status, enhancing workplace safety management.
 
 ### Libraries Used
 The following libraries were utilized during the development of the ESP32 DevKit functionality:
