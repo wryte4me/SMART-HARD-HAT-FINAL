@@ -21,7 +21,7 @@ const char* wifiPassword = "SmartHardHat_1";
 
 //                                                                                                                                              //
 // Hard Hat Unit setter
-#define HARDHAT 1   // 
+#define HARDHAT 2   // 
 //#define HARDHAT 2 //
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
@@ -295,7 +295,7 @@ bool firebaseReadBool(FirebaseData &_fbdo, const char *_path, bool &_boolData) {
       if (_fbdo.dataType() == "boolean"){
         _boolData = _fbdo.boolData();
         Serial.printf("FIREBASE: Successful read from: %s | Value: %o | ", _path, _boolData);
-      } else {
+      } else {                   
         Serial.printf("FIREBASE: Unexpected data type. Please check database path: %s | Expected Data Type: Boolean \t", _path);
         return false;
       }
@@ -415,8 +415,7 @@ void loop() {
             }
         } else {
           if (!statusUpdated){
-            updateStatus(isActive);
-            statusUpdated = true;
+            statusUpdated = updateStatus(isActive);
             updatedOnce = false;
           }
         }
