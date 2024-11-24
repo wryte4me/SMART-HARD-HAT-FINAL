@@ -67,7 +67,9 @@ bool locationUpdated = false;
 bool statusUpdated = false;
 bool isActive = false;
 bool imageUploaded = false;
-int servoPulse = 10;
+
+int servoPulse = 10; // dictates speed of servo movement, higher value lower speed
+
 bool updatedOnce = false;
 
 // Location saved in EEPROM
@@ -83,7 +85,7 @@ double newLatitude = 0.0;
 double newLongitude = 0.0;
 
 bool wifiConnected = false;
-int capacitiveThreshold = 25;
+int capacitiveThreshold = 25; // treshold for capacitive sensor
 const byte touchPin = 27;
 const byte buzzerPin = 19;
 bool isRequestingImage = false;
@@ -384,29 +386,29 @@ bool updateStatus (bool _status){
   return firebaseWriteBool(fbdoIsActive, IS_ACTIVE_PATH, _status);
 }
 
-
-
 void setupGps (){
   readFromEeprom();
 }
 
 
 void setup() {
-    Serial.begin(115200);
-    Serial2.begin(9600);
-    setupGps();
-    setupWifi();
-    setupFirebase();
-    setupServo();
-    pinMode(buzzerPin, OUTPUT);
+    Serial.begin(115200); //SERIAL MONITOR
+    Serial2.begin(9600);  //GPS MODULE
+    setupGps();           //
+    setupWifi();          //
+    setupFirebase();      //
+    setupServo();         //
+    pinMode(buzzerPin, OUTPUT); //set buzzer pin as output
 
-    updateStatus(isActive);
+    updateStatus(isActive); // write inactive to firebase
 }
 
 void loop() {
-    checkWifi();
+
+    checkWifi(); //check if connected to wifi network, if not automatically reconnect.
+
     if (!syncStarted){
-        isActive = isWorn(capacitiveThreshold);
+        isActive = isWorn(capacitiveThreshold); // check if hardhat is worn using capacitive touch sensor
         if (isActive){
             if (!updatedOnce){
                 Serial.println ("\n\n________________________________________\n\nHard hat is worn. Initiate sync now.\n________________________________________\n\n");
@@ -427,13 +429,13 @@ void loop() {
     } else {
         if (!beeping){
             startBeeping();
-            delay(4000);
+            delay(4000); // beep three times before moving camera
             beeping = true; 
         } else {
             if (!cameraDeployed) {
                 Serial.println("\n\n_____________________\n\nDeploying camera...\n_____________________\n\n");
                 deployCamera();
-                delay(7000);
+                delay(7000); 
                 cameraDeployed = true;
             }
 
