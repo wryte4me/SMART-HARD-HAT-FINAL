@@ -56,7 +56,8 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
   #define BUCKET_PHOTO "/image/user1.jpg"                               // 7 Cloud storage path for the user photo of hard hat 1                  //
   #define LOC_LATITUDE_PATH "/hardHats/hardHat1/locLatitude"            // 8 Path to store the latitude of hard hat 1                             //
   #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // 9 Path to store the longitude of hard hat 1                            //
-
+  #define H_MIRROR 0
+  #define V_FLIP 0
 #elif HARDHAT == 2                                                      //                                                                      //
   #define USER_EMAIL "hardhat2@smarthardhat.com"                        // 1 Define the user email for hard hat 2                                 //
   #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // 2 Define the user password for hard hat 2                              //
@@ -67,6 +68,8 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
   #define BUCKET_PHOTO "/image/user2.jpg"                               // 7 Cloud storage path for the user photo of hard hat 2                  //
   #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // 8 Path to store the latitude of hard hat 2                             //
   #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // 9 Path to store the longitude of hard hat 2                            //
+  #define H_MIRROR 0
+  #define V_FLIP 0
 #endif                                                                  //                                                                      //
 
 
@@ -209,8 +212,8 @@ void configureCamera (camera_config_t &_config){
   }
 
   sensor_t * s = esp_camera_sensor_get();
-  s->set_hmirror(s, 0);        // 0 = disable , 1 = enable
-  s->set_vflip(s, 0);          // 0 = disable , 1 = enable
+  s->set_hmirror(s, H_MIRROR);        // 0 = disable , 1 = enable
+  s->set_vflip(s, V_FLIP);          // 0 = disable , 1 = enable
 
 }
 
