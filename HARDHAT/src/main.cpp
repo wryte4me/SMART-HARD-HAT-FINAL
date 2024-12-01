@@ -10,8 +10,9 @@
 #include "soc/rtc_cntl_reg.h"
 #include <EEPROM.h>
 
-const char* wifiSsid = "SmartHardHat_1";
-const char* wifiPassword = "SmartHardHat_1";
+const char* wifiSsid = "Smart_Bro_E4D77";
+const char* wifiPassword = "smartbro";
+
 
 // Firebase Credentials //                                                                                                      //
 #define API_KEY "AIzaSyAy_bQFynVXe_RflYLYgsU0skc8ThOKDYE"                                       // Project API Key              //
@@ -20,7 +21,6 @@ const char* wifiPassword = "SmartHardHat_1";
 #define DB_SECRET "Zzb4ijFS1tspaGaC1YRFdIHw44JklfwRnDei7bx1"                                    // Database Secret              //
 
 //                                                                                                                                              //
-// Hard Hat Unit setter
 #define HARDHAT 2   // 
 //#define HARDHAT 2 //
 //                                                                                                                                              //
@@ -36,8 +36,7 @@ const char* wifiPassword = "SmartHardHat_1";
   #define LOC_LATITUDE_PATH "/hardHats/hardHat1/locLatitude"            // 8 Path to store the latitude of hard hat 1                             //
   #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // 9 Path to store the longitude of hard hat 1                            //
   #define IS_ACTIVE_PATH "/hardHats/hardHat1/isActive"                  // 10 Path to store status of hard hat 1
-
-#elif HARDHAT == 2                                                      //                                                                      //
+#elif HARDHAT == 2                                                      //                                                                        //
   #define USER_EMAIL "hardhat2@smarthardhat.com"                        // 1 Define the user email for hard hat 2                                 //
   #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // 2 Define the user password for hard hat 2                              //
   #define IS_REQUESTING_IMAGE_PATH "/hardHats/hardHat2/isRequestingImg" // 3 Path to check if an image is being requested for hard hat 2          //
@@ -47,8 +46,7 @@ const char* wifiPassword = "SmartHardHat_1";
   #define BUCKET_PHOTO "/image/user2.jpg"                               // 7 Cloud storage path for the user photo of hard hat 2                  //
   #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // 8 Path to store the latitude of hard hat 2                             //
   #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // 9 Path to store the longitude of hard hat 2                            //
-  #define IS_ACTIVE_PATH "/hardHats/hardHat2/isActive"                  // 10 Path to store status of hard hat 2
-
+  #define IS_ACTIVE_PATH "/hardHats/hardHat2/isActive"                  // 10 Path to store status of hard hat 2 
 #endif     
 
 #define eepromSize 256
@@ -85,7 +83,7 @@ double newLatitude = 0.0;
 double newLongitude = 0.0;
 
 bool wifiConnected = false;
-int capacitiveThreshold = 25; // treshold for capacitive sensor
+int capacitiveThreshold = 35; // treshold for capacitive sensor
 const byte touchPin = 27;
 const byte buzzerPin = 19;
 bool isRequestingImage = false;
@@ -345,8 +343,10 @@ void setupWifi(){
     WiFi.mode(WIFI_STA);
     WiFi.begin(wifiSsid, wifiPassword);
     Serial.printf ("Connecting to: %s ", wifiSsid);
+    //SerialBT.printf ("Connecting to: %s ", wifiSsid);
     while (WiFi.status() != WL_CONNECTED){
         Serial.print("#");
+        //SerialBT.println("Connecting to wifi network");
         delay(50);
     }
 }
@@ -392,6 +392,7 @@ void setupGps (){
 
 
 void setup() {
+    WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
     Serial.begin(115200); //SERIAL MONITOR
     Serial2.begin(9600);  //GPS MODULE
     setupGps();           //
@@ -399,12 +400,13 @@ void setup() {
     setupFirebase();      //
     setupServo();         //
     pinMode(buzzerPin, OUTPUT); //set buzzer pin as output
+    
 
     updateStatus(isActive); // write inactive to firebase
 }
 
 void loop() {
-
+    
     checkWifi(); //check if connected to wifi network, if not automatically reconnect.
 
     if (!syncStarted){

@@ -11,8 +11,8 @@
 #include "addons/RTDBHelper.h"
 #include "addons/TokenHelper.h"
 
-const char* wifiSsid = "SmartHardHat_1";
-const char* wifiPassword = "SmartHardHat_1";
+const char* wifiSsid = "Smart_Bro_E4D77";
+const char* wifiPassword = "smartbro";
 
 bool wifiConnected = false;
 const byte discardFirstImages = 5;
@@ -42,7 +42,7 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
 
 //                                                                                                                                              //
 // Hard Hat Unit setter
-#define HARDHAT 1   // 
+#define HARDHAT 2   // 
 //#define HARDHAT 2 //
 //                                                                                                                                              //
 // Define user credentials and paths based on the hard hat selection 
@@ -58,6 +58,7 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
   #define LOC_LONGITUDE_PATH "/hardHats/hardHat1/locLongitude"          // 9 Path to store the longitude of hard hat 1                            //
   #define H_MIRROR 0
   #define V_FLIP 0
+  #define DEVICE_NAME "HARD_HAT_1"
 #elif HARDHAT == 2                                                      //                                                                      //
   #define USER_EMAIL "hardhat2@smarthardhat.com"                        // 1 Define the user email for hard hat 2                                 //
   #define USER_PASSWORD "hardhat2@smarthardhat.com"                     // 2 Define the user password for hard hat 2                              //
@@ -69,7 +70,8 @@ String inactiveImageUrl = "https://firebasestorage.googleapis.com/v0/b/smarthard
   #define LOC_LATITUDE_PATH "/hardHats/hardHat2/locLatitude"            // 8 Path to store the latitude of hard hat 2                             //
   #define LOC_LONGITUDE_PATH "/hardHats/hardHat2/locLongitude"          // 9 Path to store the longitude of hard hat 2                            //
   #define H_MIRROR 0
-  #define V_FLIP 0
+  #define V_FLIP 1
+  #define DEVICE_NAME "HARD_HAT_2"
 #endif                                                                  //                                                                      //
 
 
