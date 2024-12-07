@@ -69,6 +69,9 @@ bool imageUploaded = false;
 int servoPulse = 10; // dictates speed of servo movement, higher value lower speed
 
 bool updatedOnce = false;
+unsigned long ellapsed = 0;
+unsigned long lastLocationUpdateMillis = 0;
+unsigned long locationUpdateInterval = 15 * 60000; //DITO BABAGUHIN TIME YUNG 15 PAPALITAN LANG NG ILANG MINUTES
 
 // Location saved in EEPROM
 double eepromLatitude = 14.198757;    
@@ -490,5 +493,13 @@ void loop() {
                 Serial.println("Flags reset complete.");
             }
         }
+    }
+
+    ellapsed = (millis () - lastLocationUpdateMillis);
+    bool timeToUpdateLocation = ellapsed > locationUpdateInterval;
+    if (isActive &&  timeToUpdateLocation) {
+      readGps();
+      updateLocationToFirebase();
+      lastLocationUpdateMillis = millis();
     }
 }
